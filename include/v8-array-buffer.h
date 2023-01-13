@@ -120,11 +120,11 @@ class V8_EXPORT ArrayBuffer : public Object {
    * Isolate::CreateParams.
    *
    * Memory allocated through this allocator by V8 is accounted for as external
-   * memory by V8. Note that V8 keeps track of the memory for all internalized
-   * |ArrayBuffer|s. Responsibility for tracking external memory (using
-   * Isolate::AdjustAmountOfExternalAllocatedMemory) is handed over to the
-   * embedder upon externalization and taken over upon internalization (creating
-   * an internalized buffer from an existing buffer).
+   * memory by V8. Note that V8 keeps track of the memory for all
+   * internalizedptr_to_local |ArrayBuffer|s. Responsibility for tracking
+   * external memory (using Isolate::AdjustAmountOfExternalAllocatedMemory) is
+   * handed over to the embedder upon externalization and taken over upon
+   * internalization (creating an internalized buffer from an existing buffer).
    *
    * Note that it is unsafe to call back into V8 from any of the allocator
    * functions.
@@ -240,13 +240,17 @@ class V8_EXPORT ArrayBuffer : public Object {
    */
   bool IsDetachable() const;
 
+  bool WasDetached() const;
+
+  void SetDetachKey(const v8::Local<v8::Value> key);
+
   /**
    * Detaches this ArrayBuffer and all its views (typed arrays).
    * Detaching sets the byte length of the buffer and all typed arrays to zero,
    * preventing JavaScript from ever accessing underlying backing store.
    * ArrayBuffer should have been externalized and must be detachable.
    */
-  void Detach();
+  Maybe<bool> Detach(const v8::Local<v8::Value> key);
 
   /**
    * Get a shared pointer to the backing store of this array buffer. This

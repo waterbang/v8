@@ -7968,7 +7968,7 @@ std::shared_ptr<i::BackingStore> ToInternal(
 }
 }  // namespace
 
-void v8::ArrayBuffer::Detach() {
+Maybe<bool> v8::ArrayBuffer::Detach(const v8::Local<v8::Value> key) {
   i::Handle<i::JSArrayBuffer> obj = Utils::OpenHandle(this);
   i::Isolate* i_isolate = obj->GetIsolate();
   Utils::ApiCheck(obj->is_detachable(), "v8::ArrayBuffer::Detach",
@@ -7976,6 +7976,7 @@ void v8::ArrayBuffer::Detach() {
   API_RCS_SCOPE(i_isolate, ArrayBuffer, Detach);
   ENTER_V8_NO_SCRIPT_NO_EXCEPTION(i_isolate);
   obj->Detach();
+  return Just(true);
 }
 
 size_t v8::ArrayBuffer::ByteLength() const {
